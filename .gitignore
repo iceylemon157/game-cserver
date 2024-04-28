@@ -51,3 +51,6 @@ Testing/
 
 # Visual Studio Code
 .vscode/
+
+# compiled file
+server

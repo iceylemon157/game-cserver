@@ -1,29 +1,40 @@
 #include "GameController.h"
+#include <utility>
 
+using namespace std;
 using namespace ctl;
 
-std::string GameController::resp;
+string GameController::resp;
+pair<int, int> GameController::playerPosition;
 
-void GameController::moveRight() {
+void GameController::MoveRight() {
     resp = "d";
 }
 
-void GameController::moveLeft() {
+void GameController::MoveLeft() {
     resp = "a";
 }
 
-void GameController::moveUp() {
+void GameController::MoveUp() {
     resp = "w";
 }
 
-void GameController::moveDown() {
+void GameController::MoveDown() {
     resp = "s";
 }
 
-void GameController::interact() {
+void GameController::Interact() {
     resp = "e";
 }
 
-void GameController::interactSpecial() {
+void GameController::InteractSpecial() {
     resp = "f";
+}
+
+void GameController::SetPlayerPosition(pair<int, int> position) {
+    playerPosition = position;
+}
+
+pair<int, int> ctl::GameController::GetPlayerPosition() {
+    return playerPosition;
 }

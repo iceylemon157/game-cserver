@@ -5,6 +5,7 @@
 
 #include "GameController.h"
 #include "user.h"
+#include "kitchen.h"
 #include "wfrest/HttpServer.h"
 #include "wfrest/json.hpp"
 #include "workflow/WFFacilities.h"
@@ -28,7 +29,7 @@ int main() {
     HttpServer svr;
 
     string responseString = "default";
-    GameController controller(responseString);
+    GameController& controller = GameController::getInstance(responseString);
 
     UserAction action;
 
@@ -37,15 +38,16 @@ int main() {
         vector<string> result = ParseJsonToVector(req->json());
         action.InitGame(controller);
 
-        resp->String(controller.resp);
+        resp->String(controller.GetResponse());
         // CORS
         resp->add_header_pair("Access-Control-Allow-Origin", "*");
     });
 
     // gaming operations (move right, move left, move up, move down, interact, interact special)
     svr.GET("/api/operation", [&](const HttpReq *req, HttpResp *resp) {
+        cout << "Round: " << req->query("round") << endl;
         action.SendOperation(controller);
-        resp->String(controller.resp);
+        resp->String(controller.GetResponse());
         // CORS
         resp->add_header_pair("Access-Control-Allow-Origin", "*");
     });
@@ -56,7 +58,7 @@ int main() {
         vector<string> result = ParseJsonToVector(req->json());
 
         action.ReceiveEvents(controller, result);
-        resp->String(controller.resp);
+        resp->String(controller.GetResponse());
         // CORS
         resp->add_header_pair("Access-Control-Allow-Origin", "*");
     });
@@ -120,6 +122,17 @@ vector<string> ParseJsonToVector(const Json &json) {
             // print the first key
             for (auto &ingredient : recipe) {
                 cout << "Ingredient: " << ingredient.dump() << endl;
+            }
+        } else if (item.key() == "FryingState") {
+            int fryingState = item.value().get<int>();
+            if (fryingState == Frying) {
+                cout << "FryingState: Frying" << endl;
+            } else if (fryingState == Fried) {
+                cout << "FryingState: Fried" << endl;
+            } else if (fryingState == Burnt) {
+                cout << "FryingState: Burnt" << endl;
+            } else {
+                cout << "FryingState: Idle" << endl;
             }
         }
         result.emplace_back(item.dump());
