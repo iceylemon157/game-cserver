@@ -31,6 +31,9 @@ void GameController::InteractSpecial() {
     resp = "f";
 }
 
+string GameController::GetResponse() { return resp; }
+void GameController::SetResponse(string _resp) { resp = _resp; }
+
 void GameController::SetPlayerPosition(pair<int, int> position) {
     playerPosition = position;
 }

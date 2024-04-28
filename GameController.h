@@ -24,10 +24,10 @@ namespace ctl {
         void InteractSpecial();
 
         void SetResponse(std::string _resp);
-        string GetResponse();
+        std::string GetResponse();
 
-        void SetPlayerPosition(pair<int, int> position);
-        pair<int, int> GetPlayerPosition();
+        void SetPlayerPosition(std::pair<int, int> position);
+        std::pair<int, int> GetPlayerPosition();
     private:
         // By chatGPT, I don't understand it, but it implements the singleton pattern
         GameController() {}
@@ -40,8 +40,8 @@ namespace ctl {
         GameController(const GameController&) = delete;
         GameController& operator=(const GameController&) = delete;
 
-        static pair<int, int> playerPosition;
-        static string resp;
+        static std::pair<int, int> playerPosition;
+        static std::string resp;
     };
 }
 
