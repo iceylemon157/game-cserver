@@ -2,12 +2,11 @@
 #include <iostream>
 #include <random>
 #include <vector>
+#include <map>
 
 #include "GameController.h"
 #include "user.h"
-#include "kitchen.h"
 #include "wfrest/HttpServer.h"
-#include "wfrest/json.hpp"
 #include "workflow/WFFacilities.h"
 
 using namespace wfrest;
@@ -53,11 +52,29 @@ int main() {
     });
 
     // gaming events (e.g. recipe delivered, recipe failed, recipe list, total score, time left, overcooked warning)
+
+    // javascript will send a OPTIONS request before sending a POST request
+    // deal with the OPTIONS request here
+
+    svr.ROUTE("/api/events", [&](const HttpReq *req, HttpResp *resp) {
+        if (string(req->get_method()) == "OPTIONS") {
+            // CORS
+            resp->add_header_pair("Access-Control-Allow-Origin", "*");
+            resp->add_header_pair("Access-Control-Allow-Methods", "POST");
+            resp->add_header_pair("Access-Control-Allow-Headers", "Content-Type");
+            return;
+        }
+    }, {"OPTIONS"});
+
     svr.POST("/api/events", [&](const HttpReq *req, HttpResp *resp) {
         cout << "Received events: " << req->json() << endl;
         vector<string> result = ParseJsonToVector(req->json());
 
-        action.ReceiveEvents(controller, result);
+        controller.ReceiveEvents(req->json());
+
+        cout << "Round uwubbb: " << controller.GetRound() << endl;
+
+        // action.ReceiveEvents(controller, result);
         resp->String(controller.GetResponse());
         // CORS
         resp->add_header_pair("Access-Control-Allow-Origin", "*");
@@ -72,6 +89,8 @@ int main() {
     svr.GET("/data", [](const HttpReq *req, HttpResp *resp) {
         string str = "Hello world";
         resp->String(move(str));
+        // CORS
+        resp->add_header_pair("Access-Control-Allow-Origin", "*");
     });
 
     svr.ROUTE("/multi",
@@ -108,10 +127,10 @@ vector<string> ParseJsonToVector(const Json &json) {
         // cout << item.dump() << endl;
         if (item.key() == "NewRecipe") {
             
-            std::string json_string = "{\"kitchenObjectSOList\":[{\"instanceID\":28018},{\"instanceID\":28066}],\"recipeName\":\"Salad\",\"id\":1}";
-            Json ajson = Json::parse(json_string);
-
-            cout << "NewRecipe a: " << ajson.dump() << endl;
+            // template
+            // std::string json_string = "{\"kitchenObjectSOList\":[{\"instanceID\":28018},{\"instanceID\":28066}],\"recipeName\":\"Salad\",\"id\":1}";
+            // Json ajson = Json::parse(json_string);
+            // cout << "NewRecipe a: " << ajson.dump() << endl;
 
             // print the type of item.value()
             Json recipe = Json::parse(item.value().dump());
@@ -124,7 +143,7 @@ vector<string> ParseJsonToVector(const Json &json) {
                 cout << "Ingredient: " << ingredient.dump() << endl;
             }
         } else if (item.key() == "FryingState") {
-            int fryingState = item.value().get<int>();
+            enum FryingState fryingState = (enum FryingState)item.value().get<int>();
             if (fryingState == Frying) {
                 cout << "FryingState: Frying" << endl;
             } else if (fryingState == Fried) {
