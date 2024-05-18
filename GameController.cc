@@ -1,43 +1,78 @@
 #include "GameController.h"
-#include <utility>
 
 using namespace std;
 using namespace ctl;
 
-string GameController::resp;
-pair<int, int> GameController::playerPosition;
+void GameController::ReceiveEvents(const wfrest::Json &json) {
+    // Parse the JSON and update the game state
 
-void GameController::MoveRight() {
-    resp = "d";
+    GameController::SetRound(int(json["Round"]));
+    GameController::SetTotalScore(int(json["TotalScore"]));
+
+    GameController::SetPlayerPosition(pair<int, int>(int(json["PlayerPosition"]["x"]), int(json["PlayerPosition"]["y"])));
+
+    // TODO: Should playerHoldItems be sorted?
+    vector<Items> playerHoldItems;
+    for (auto item : json["PlayerHoldItems"]) {
+        Items itemEnum = (Items)int(item);
+        playerHoldItems.emplace_back(itemEnum);
+    }
+    GameController::SetPlayerHoldItems(playerHoldItems);
+
+    // TODO: RecipeDelivered not considered yet
+    // GameController::SetRecipeDelivered()
+
+    // New Recipe
+    Order order = Order(
+        int(json["NewRecipe"]["RecipeID"]), 
+        (Recipe)int(json["NewRecipe"]["Recipe"]), 
+        int(json["NewRecipe"]["Score"])
+    );
+    GameController::SetNewOrder(order);
+
+    // Recipe List
+    vector<Order> orderList;
+    for (auto orderInfo : json["RecipeList"]) {
+        Order order = Order(
+            int(orderInfo["id"]), 
+            // (Recipe)int(orderInfo["Recipe"]), 
+            Burger, // TODO: Recipe enum not considered yet
+            int(orderInfo["recipeScore"])
+        );
+        orderList.emplace_back(order);
+    }
+
+    // Frying Timer and Frying State
+    GameController::SetFryingTimer(int(json["FryingTimer"]));
+    GameController::SetFryingState((FryingState)int(json["FryingState"]));
+
+    PrintEvents();
+
+    // Update the response string
+    resp = "ok";
 }
 
-void GameController::MoveLeft() {
-    resp = "a";
-}
+void GameController::PrintEvents() {
+    cout << "--- Current Game State ---" << endl;
 
-void GameController::MoveUp() {
-    resp = "w";
-}
+    cout << "Round: " << GameController::GetRound() << endl;
+    cout << "Total Score: " << GameController::GetTotalScore() << endl;
 
-void GameController::MoveDown() {
-    resp = "s";
-}
+    cout << "Player Position: (" << GameController::GetPlayerPosition().first << ", " << GameController::GetPlayerPosition().second << ")" << endl;
+    cout << "Player Hold Items: ";
+    GameController::PrintItems(GameController::GetPlayerHoldItems());
 
-void GameController::Interact() {
-    resp = "e";
-}
+    cout << "New Order: ";
+    GameController::PrintOrderInfo(GameController::GetNewOrder());
 
-void GameController::InteractSpecial() {
-    resp = "f";
-}
+    cout << "Order List: " << endl;
+    for (auto order : GameController::GetOrderList()) {
+        GameController::PrintOrderInfo(order);
+    }
 
-string GameController::GetResponse() { return resp; }
-void GameController::SetResponse(string _resp) { resp = _resp; }
+    cout << "Frying Timer: " << GameController::GetFryingTimer() << endl;
+    cout << "Frying State: " << FryingStateMap.at(GameController::GetFryingState()) << endl;
+    
 
-void GameController::SetPlayerPosition(pair<int, int> position) {
-    playerPosition = position;
-}
-
-pair<int, int> ctl::GameController::GetPlayerPosition() {
-    return playerPosition;
+    cout << "--- End of Game State ---" << endl;
 }

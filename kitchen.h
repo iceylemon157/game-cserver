@@ -1,19 +1,22 @@
-enum Ingredient {
+#include <map>
+using namespace std;
+
+enum Items {
     // Non-edible
     Plate,
 
     // Raw Ingredients
     Cabbage,
-    Cheese,
-    MeatPatty,
+    CheeseBlock,
+    RawMeatPatty,
     Tomato,
 
     // Processed Ingredients
     Bread,
-    SlicedCabage,
-    SlicedCheese,
-    SlicedTomato,
+    CabbageSlices,
+    CheeseSlices,
     CookedPatty,
+    TomatoSlices,
 
     // Overcooked Ingredients
     BurntPatty,
@@ -41,6 +44,8 @@ enum DeliveryState {
 };
 
 enum Counter {
+    // This is probably not necessary now
+
     // Ingredient counters
     BreadCounter,
     CabbageCounter,
@@ -57,26 +62,78 @@ enum Counter {
     DeliveryCounter,
 };
 
-enum Event {
-    // Global events
-    Round,
-    TotalScore,
-    TimeLeft,
+// enum Event {
+//     // Global events
+//     Round,
+//     TotalScore,
+//     TimeLeft,
 
-    // Recipe events
-    NewRecipe,
-    RecipeList, // with score change and time left
+//     // Recipe events
+//     NewRecipe,
+//     RecipeList, // with score change and time left
 
-    // Should the following two be replaced with DeliveryState?
-    RecipeDelivered,
-    RecipeTimeout,
+//     // Should the following two be replaced with DeliveryState?
+//     OrderDelivered,
+//     RecipeTimeout,
     
-    // Player events
-    PlayerPosition,
-    PlayerHoldItem,
+//     // Player events
+//     PlayerPosition,
+//     PlayerHoldItems,
 
-    // Ingredient events
-    FryingTimer,
-    FryingState,
+//     // Ingredient events
+//     FryingTimer,
+//     FryingState,
 
+// };
+
+struct Order {
+    // TODO: Separate Order from Recipe in Unity
+    // Properties
+    int OrderID;
+    Recipe recipe;
+    int Score;
+    // int RoundLeft; // Not implemented, not sure if necessary
+
+    // Constructors
+    Order() {}
+    Order(int _OrderID, Recipe _recipe, int _Score) {
+        OrderID = _OrderID,
+        recipe = _recipe,
+        Score = _Score;
+     }
+};
+
+const map<Items, string> ItemsMap = {
+    { Plate, "Plate" },
+    { Cabbage, "Cabbage" },
+    { CheeseBlock, "CheeseBlock" },
+    { RawMeatPatty, "RawMeatPatty" },
+    { Tomato, "Tomato" },
+    { Bread, "Bread" },
+    { CabbageSlices, "CabbageSlices" },
+    { CheeseSlices, "CheeseSlices" },
+    { CookedPatty, "CookedPatty" },
+    { TomatoSlices, "TomatoSlices" },
+    { BurntPatty, "BurntPatty" },
+};
+
+const map<Recipe, string> RecipeMap = {
+    { Salad, "Salad" },
+    { Burger, "Burger" },
+    { CheeseBurger, "CheeseBurger" },
+    { MegaBurger, "MegaBurger" },
+};
+
+const map<Recipe, vector<Items>> RecipeIngredients = {
+    { Salad, { CabbageSlices, TomatoSlices } },
+    { Burger, { Bread, CookedPatty } },
+    { CheeseBurger, { Bread, CheeseSlices, CookedPatty } },
+    { MegaBurger, { Bread, CabbageSlices, CheeseSlices, CookedPatty, TomatoSlices } },
+};
+
+const map<FryingState, string> FryingStateMap = {
+    { Idle, "Idle" },
+    { Frying, "Frying" },
+    { Fried, "Fried" },
+    { Burnt, "Burnt" },
 };

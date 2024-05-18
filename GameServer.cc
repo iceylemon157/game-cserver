@@ -143,16 +143,8 @@ vector<string> ParseJsonToVector(const Json &json) {
                 cout << "Ingredient: " << ingredient.dump() << endl;
             }
         } else if (item.key() == "FryingState") {
-            enum FryingState fryingState = (enum FryingState)item.value().get<int>();
-            if (fryingState == Frying) {
-                cout << "FryingState: Frying" << endl;
-            } else if (fryingState == Fried) {
-                cout << "FryingState: Fried" << endl;
-            } else if (fryingState == Burnt) {
-                cout << "FryingState: Burnt" << endl;
-            } else {
-                cout << "FryingState: Idle" << endl;
-            }
+            FryingState fryingState = (FryingState)item.value().get<int>();
+            cout << "FryingState: " << FryingStateMap.at(fryingState) << endl;
         }
         result.emplace_back(item.dump());
     }
