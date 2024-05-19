@@ -24,23 +24,25 @@ void GameController::ReceiveEvents(const wfrest::Json &json) {
 
     // New Recipe
     Order order = Order(
-        int(json["NewRecipe"]["RecipeID"]), 
-        (Recipe)int(json["NewRecipe"]["Recipe"]), 
-        int(json["NewRecipe"]["Score"])
+        int(json["NewOrder"]["orderID"]), 
+        (Recipe)int(json["NewOrder"]["recipeID"]),
+        int(json["NewOrder"]["orderScore"]),
+        int(json["NewOrder"]["existedTime"])
     );
     GameController::SetNewOrder(order);
 
     // Recipe List
     vector<Order> orderList;
-    for (auto orderInfo : json["RecipeList"]) {
+    for (auto orderInfo : json["OrderList"]) {
         Order order = Order(
-            int(orderInfo["id"]), 
-            // (Recipe)int(orderInfo["Recipe"]), 
-            Burger, // TODO: Recipe enum not considered yet
-            int(orderInfo["recipeScore"])
+            int(orderInfo["orderID"]), 
+            (Recipe)int(orderInfo["recipeID"]), 
+            int(orderInfo["orderScore"]),
+            int(orderInfo["existedTime"])
         );
         orderList.emplace_back(order);
     }
+    GameController::SetOrderList(orderList);
 
     // Frying Timer and Frying State
     GameController::SetFryingTimer(int(json["FryingTimer"]));

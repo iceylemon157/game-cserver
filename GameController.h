@@ -86,25 +86,28 @@ namespace ctl {
         void SetOrderDelivered(pair<int, int> _data) { orderDelivered = _data; };
 
         void SetNewOrder(Order _order) { newOrder = _order; };
-        void SetRecipeList(vector<Order> _recipeList) { orderList = _recipeList; };
+        void SetOrderList(vector<Order> _orderList) { orderList = _orderList; };
 
         void SetFryingTimer(int _time) { fryingTimer = _time; };
         void SetFryingState(enum FryingState _state) { fryingState = _state; };
 
         void PrintItems(vector<Items> items) {
             bool first = true;
+            cout << "[ ";
             for (auto item : items) {
                 if (first) first = false;
                 else cout << ", ";
                 cout << ItemsMap.at(item);
             }
-            cout << endl;
+            cout << " ]" << endl;
         }
 
         void PrintOrderInfo(Order order) {
+            cout << "> ";
             cout << "Order ID: " << order.OrderID << ", ";
-            cout << "Recipe: " << order.recipe << ", ";
-            cout << "Score: " << order.Score << endl;
+            cout << "Recipe: " << RecipeMap.at(order.recipe) << ", ";
+            cout << "Score: " << order.Score << ", ";
+            cout << "Arrial Time: " << order.ExistedTime << endl;
         }
 
     };

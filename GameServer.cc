@@ -5,7 +5,7 @@
 #include <map>
 
 #include "GameController.h"
-#include "user.h"
+#include "UserAction.h"
 #include "wfrest/HttpServer.h"
 #include "workflow/WFFacilities.h"
 
@@ -20,7 +20,6 @@ void sig_handler(int signo) { wait_group.done(); }
 mt19937 ran(time(nullptr));
 
 string RandomString();
-vector<string> ParseJsonToVector(const Json &json);
 
 int main() {
     signal(SIGINT, sig_handler);
@@ -34,7 +33,6 @@ int main() {
 
     // init game
     svr.GET("/api/init", [&](const HttpReq *req, HttpResp *resp) {
-        vector<string> result = ParseJsonToVector(req->json());
         action.InitGame(controller);
 
         resp->String(controller.GetResponse());
@@ -46,6 +44,7 @@ int main() {
     svr.GET("/api/operation", [&](const HttpReq *req, HttpResp *resp) {
         cout << "Round: " << req->query("round") << endl;
         action.SendOperation(controller);
+
         resp->String(controller.GetResponse());
         // CORS
         resp->add_header_pair("Access-Control-Allow-Origin", "*");
@@ -68,13 +67,9 @@ int main() {
 
     svr.POST("/api/events", [&](const HttpReq *req, HttpResp *resp) {
         cout << "Received events: " << req->json() << endl;
-        vector<string> result = ParseJsonToVector(req->json());
 
         controller.ReceiveEvents(req->json());
 
-        cout << "Round uwubbb: " << controller.GetRound() << endl;
-
-        // action.ReceiveEvents(controller, result);
         resp->String(controller.GetResponse());
         // CORS
         resp->add_header_pair("Access-Control-Allow-Origin", "*");
@@ -119,36 +114,6 @@ int main() {
         exit(1);
     }
     return 0;
-}
-
-vector<string> ParseJsonToVector(const Json &json) {
-    vector<string> result;
-    for (auto &item : json) {
-        // cout << item.dump() << endl;
-        if (item.key() == "NewRecipe") {
-            
-            // template
-            // std::string json_string = "{\"kitchenObjectSOList\":[{\"instanceID\":28018},{\"instanceID\":28066}],\"recipeName\":\"Salad\",\"id\":1}";
-            // Json ajson = Json::parse(json_string);
-            // cout << "NewRecipe a: " << ajson.dump() << endl;
-
-            // print the type of item.value()
-            Json recipe = Json::parse(item.value().dump());
-            // Json recipe = item.value();
-            cout << "NewRecipe: " << recipe.dump() << endl;
-            // print number of keys
-            cout << "Number of keys: " << recipe.size() << endl;
-            // print the first key
-            for (auto &ingredient : recipe) {
-                cout << "Ingredient: " << ingredient.dump() << endl;
-            }
-        } else if (item.key() == "FryingState") {
-            FryingState fryingState = (FryingState)item.value().get<int>();
-            cout << "FryingState: " << FryingStateMap.at(fryingState) << endl;
-        }
-        result.emplace_back(item.dump());
-    }
-    return result;
 }
 
 string RandomString() {

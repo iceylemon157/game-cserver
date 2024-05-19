@@ -92,14 +92,16 @@ struct Order {
     int OrderID;
     Recipe recipe;
     int Score;
+    int ExistedTime;
     // int RoundLeft; // Not implemented, not sure if necessary
 
     // Constructors
     Order() {}
-    Order(int _OrderID, Recipe _recipe, int _Score) {
+    Order(int _OrderID, Recipe _recipe, int _Score, int _ExistedTime) {
         OrderID = _OrderID,
         recipe = _recipe,
-        Score = _Score;
+        Score = _Score,
+        ExistedTime = _ExistedTime;
      }
 };
 
