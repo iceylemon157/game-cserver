@@ -163,16 +163,17 @@ void MakeSalad(GameController& controller) {
     // Send Order!
 }
 
-void AnSimpleExample() {
+void SimpleExample() {
     // The beginning steps of making a salad
 
     templateOperations.clear();
     // Move to Cabbage Counter
-    TemplateMoveToCounter(CabbageCounter, controller);
+    pair<int, int> playerPosition = controller.GetPlayerPosition();
+    MovePointToCounter(playerPosition, CabbageCounter, controller);
     // Grab Cabbage
     templateOperations.push_back("e");
     // Move to Cutting Counter
-    TemplateMoveToCounter(CuttingCounter, controller);
+    MoveCounterToCounter(CabbageCounter, CuttingCounter, controller);
     // Cut Cabbage
     templateOperations.push_back("e");
     // ... Do The Rest By Yourself !
