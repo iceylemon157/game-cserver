@@ -2,12 +2,24 @@
 
 class UserAction {
 public:
-    void SendOperation(ctl::GameController&);
-    void GetEvents(std::vector<std::string> events);
-    void ReceiveEvents(ctl::GameController&, std::vector<std::string>);
+    // DO NOT MODIFY THESE TWO FUNCTIONS //
+    void SendOperation();
+    void InitGame();
+    // DO NOT MODIFY THESE TWO FUNCTIONS //
 
-    void InitGame(ctl::GameController&);
+    // -- YOU CAN ADD YOUR OWN FUNCTIONS/VARIABLES BELOW THIS LINE -- //
 
+
+
+    // -- YOU CAN ADD YOUR OWN FUNCTIONS/VARIABLES ABOVE THIS LINE -- //
 private:
+    // DO NOT MODIFY THIS FUNCTION //
     void Initialize();
+    // DO NOT MODIFY THIS FUNCTION //
+
+    // -- YOU CAN ADD YOUR OWN FUNCTIONS/VARIABLES BELOW THIS LINE -- //
+
+
+
+    // -- YOU CAN ADD YOUR OWN FUNCTIONS/VARIABLES ABOVE THIS LINE -- //
 };
