@@ -74,17 +74,17 @@ void UserAction::SendOperation() {
 
 // -- Moving series functions Below -- //
 
-void TemplateMoveToCoordinate(pair<int, int> target, GameController& controller) {
-    // TODO: Move to the target coordinate
+void MovePointToPoint(pair<int, int> from, pair<int, int> to, GameController& controller) {
+    // TODO: Move from one point to another point
 }
 
-void TemplateMoveToCounter(Counter targetCounter, GameController& controller) {
-    // TODO: Move to the counter
-    pair<int, int> targetPosition = counterPosition.at(targetCounter);
+void MovePointToCounter(pair<int, int> fromPoint, Counter toCounter, GameController& controller) {
+    // TODO: Move from one point to a counter
+    pair<int, int> targetPosition = counterPosition.at(toCounter);
 
 }
 
-void TemplateMoveCounterToCounter(Counter from, Counter to, GameController& controller) {
+void MoveCounterToCounter(Counter from, Counter to, GameController& controller) {
     // TODO: Move from one counter to another counter
 }
 
