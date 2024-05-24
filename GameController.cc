@@ -4,6 +4,7 @@ using namespace std;
 using namespace ctl;
 
 void GameController::ReceiveEvents(const wfrest::Json &json) {
+    // DO NOT MODIFY THIS FUNCTION
     // Parse the JSON and update the game state
 
     GameController::SetRound(int(json["Round"]));
@@ -20,7 +21,10 @@ void GameController::ReceiveEvents(const wfrest::Json &json) {
     GameController::SetPlayerHoldItems(playerHoldItems);
 
     // TODO: RecipeDelivered not considered yet
-    // GameController::SetRecipeDelivered()
+    pair<int, int> orderDelivered = pair<int, int>(
+        int(json["OrderDelivered"][0]), int(json["OrderDelivered"][1])
+    );
+    GameController::SetOrderDelivered(orderDelivered);
 
     // New Recipe
     Order order = Order(
@@ -52,6 +56,25 @@ void GameController::ReceiveEvents(const wfrest::Json &json) {
 
     // Update the response string
     resp = "ok";
+}
+
+void GameController::PrintItems(vector<Items> items) {
+    bool first = true;
+    cout << "[ ";
+    for (auto item : items) {
+        if (first) first = false;
+        else cout << ", ";
+        cout << ItemsMap.at(item);
+    }
+    cout << " ]" << endl;
+}
+
+void GameController::PrintOrderInfo(Order order) {
+    cout << "> ";
+    cout << "Order ID: " << order.orderID << ", ";
+    cout << "Recipe: " << RecipeMap.at(order.recipe) << ", ";
+    cout << "Score: " << order.score << ", ";
+    cout << "Arrial Time: " << order.arrivalRound << endl;
 }
 
 void GameController::PrintEvents() {

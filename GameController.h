@@ -44,11 +44,13 @@ namespace ctl {
         int GetFryingTimer() const { return fryingTimer; };
         FryingState GetFryingState() const { return fryingState; };
 
-        void ReceiveEvents(const wfrest::Json &json);
+        void PrintItems(vector<Items> items);
+        void PrintOrderInfo(Order order);
         void PrintEvents();
 
+        void ReceiveEvents(const wfrest::Json &json);
+
     private:
-        // By chatGPT, I don't understand it, but it implements the singleton pattern
         GameController() {}
         GameController(std::string _resp) {
             resp = _resp;
@@ -63,7 +65,6 @@ namespace ctl {
 
         int round;
         int totalScore;
-        int timeLeft; // Deprecated
 
         pair<int, int> playerPosition;
         vector<Items> playerHoldItems;
@@ -78,7 +79,6 @@ namespace ctl {
 
         void SetRound(int _round) { round = _round; };
         void SetTotalScore(int _score) { totalScore = _score; };
-        void SetTimeLeft(int _time) { timeLeft = _time; };
 
         void SetPlayerPosition(pair<int, int> _position) { playerPosition = _position; };
         void SetPlayerHoldItems(vector<Items> _items) { playerHoldItems = _items; };
@@ -90,26 +90,6 @@ namespace ctl {
 
         void SetFryingTimer(int _time) { fryingTimer = _time; };
         void SetFryingState(enum FryingState _state) { fryingState = _state; };
-
-        void PrintItems(vector<Items> items) {
-            bool first = true;
-            cout << "[ ";
-            for (auto item : items) {
-                if (first) first = false;
-                else cout << ", ";
-                cout << ItemsMap.at(item);
-            }
-            cout << " ]" << endl;
-        }
-
-        void PrintOrderInfo(Order order) {
-            cout << "> ";
-            cout << "Order ID: " << order.OrderID << ", ";
-            cout << "Recipe: " << RecipeMap.at(order.recipe) << ", ";
-            cout << "Score: " << order.Score << ", ";
-            cout << "Arrial Time: " << order.ExistedTime << endl;
-        }
-
     };
 }
 
