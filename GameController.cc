@@ -7,6 +7,7 @@ void GameController::ReceiveEvents(const wfrest::Json &json) {
     // DO NOT MODIFY THIS FUNCTION
     // Parse the JSON and update the game state
 
+    GameController::SetRecipeMode(json["RecipeMode"]);
     GameController::SetRound(int(json["Round"]));
     GameController::SetTotalScore(int(json["TotalScore"]));
 
@@ -79,6 +80,7 @@ void GameController::PrintEvents() {
     cout << "--- Current Game State ---" << endl;
 
     cout << "Round: " << GameController::GetRound() << endl;
+    cout << "Recipe Mode: " << GameController::GetRecipeMode() << endl;
     cout << "Total Score: " << GameController::GetTotalScore() << endl;
 
     cout << "Player Position: (" << GameController::GetPlayerPosition().first << ", " << GameController::GetPlayerPosition().second << ")" << endl;
@@ -87,6 +89,17 @@ void GameController::PrintEvents() {
 
     cout << "New Order: ";
     GameController::PrintOrderInfo(GameController::GetNewOrder());
+
+    cout << "Order Delivered: ";
+    int orderID = GameController::GetOrderDelivered().first;
+    if (orderID == 0) {
+        cout << "None" << endl;
+    } else if (orderID == -1) {
+        cout << "Delivery Failed!" << endl;
+    } else {
+        cout << "OrderID: " << GameController::GetOrderDelivered().first << ", ";
+        cout << "Score: " << GameController::GetOrderDelivered().second << endl;
+    }
 
     cout << "Order List: " << endl;
     for (auto order : GameController::GetOrderList()) {
