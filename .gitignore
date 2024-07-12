@@ -52,5 +52,6 @@ Testing/
 # Visual Studio Code
 .vscode/
 
-# compiled file
+# compiled file & testing files
 server
+iceylemon-UserAction.cc

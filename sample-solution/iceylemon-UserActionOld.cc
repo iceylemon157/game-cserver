@@ -24,6 +24,8 @@ bool firstHalfSalad = false;
 bool isFrying = false;
 pair<int, int> playerPosition = {4, 10};
 
+const pair<int, int> playerStartPosition = {4, 10};
+
 const map<Counter, pair<int, int>> counterPosition = {
     { BreadCounter, {0, 1} },
     { CabbageCounter, {8, 4} },
@@ -37,20 +39,6 @@ const map<Counter, pair<int, int>> counterPosition = {
     { CuttingCounter, {8, 14} },
     { NormalCounter, {8, 13} }
 };
-
-// const map<Counter, char> counterDirection = {
-//     { BreadCounter, 'w' },
-//     { CabbageCounter, 's' },
-//     { CheeseBlockCounter, 'w' },
-//     { TomatoCounter, 's' },
-//     { RawPattyCounter, 'w' },
-//     { StoveCounter, 'w' },
-//     { PlatesCounter, 'd' },
-//     { TrashCounter, 'd' },
-//     { DeliveryCounter, 'd' },
-//     { CuttingCounter, 's' },
-//     { NormalCounter, 's' }
-// };
 
 void DefaultInitialize();
 void SaladSendOperation();
@@ -68,8 +56,6 @@ void UserAction::InitGame() {
 void UserAction::Initialize() {
     cout << "Initializing the game..." << endl;
     // MakeCheeseBurger();
-    MakeFirstHalfSalad();
-    PrintOperations();
     DefaultInitialize();
 }
 
@@ -102,8 +88,6 @@ char GetFacingDirection(pair<int, int> point) {
 }
 
 void MovePointToPoint(pair<int, int> from, pair<int, int> to) {
-    cout << "*** MovePointToPoint ***\n";
-    cout << "from: " << from.first << " " << from.second << " to: " << to.first << " " << to.second << endl;
     char xdir = (from.first < to.first) ? 's' : 'w';
     char ydir = (from.second < to.second) ? 'd' : 'a';
     char direction = GetFacingDirection(to);
@@ -134,7 +118,6 @@ void MovePointToPoint(pair<int, int> from, pair<int, int> to) {
     }
 
     // Use a more general way to get facing direction
-    // operations.push(counterDirection.at(toCounter));
     if (!operations.empty() and operations.back() == direction) {
         // If the last operation is the same as the direction, we don't need to move
         return;
@@ -255,11 +238,13 @@ void MakeFirstHalfSalad() {
         MovePointToCounterAndInteract(playerPosition, NormalCounter);
     }
     isSaladPlate = false;
+    // Grab Tomato at Tomato Counter
     MoveCounterToCounterAndInteract(NormalCounter, TomatoCounter);
     // Move to Cutting Counter
     MoveCounterToCounterAndInteract(TomatoCounter, CuttingCounter);
     CutIngredient(3);
     operations.push('e');
+    // Put Down Tomato Slices To The Plate on Normal Counter
     MoveCounterToCounterAndInteract(CuttingCounter, NormalCounter);
 }
 
@@ -275,7 +260,6 @@ void MakeLastHalfSalad() {
         // Move to Delivery Counter without delivering
         MoveCounterToCounterAndInteract(NormalCounter, DeliveryCounter);
     }
-
 }
 
 void MakeSalad() {
@@ -287,47 +271,6 @@ void MakeSalad() {
     firstHalfSalad = false;
     isSpareSalad = true;
 }
-
-void MakeSaladBackup() {
-    // pair<int, int> playerPosition = controller.GetPlayerPosition();
-    if (!isSaladPlate) {
-        // Grab Plate
-        MovePointToCounterAndInteract(playerPosition, PlatesCounter);
-        // Move to Normal Counter
-        MoveCounterToCounterAndInteract(PlatesCounter, NormalCounter);
-        // Move to Cabbage Counter
-        MoveCounterToCounterAndInteract(NormalCounter, CabbageCounter);
-    } else {
-        // Move to Cabbage Counter
-        MovePointToCounterAndInteract(playerPosition, CabbageCounter);
-    }
-    isSaladPlate = false;
-    // Move to Cutting Counter
-    MoveCounterToCounterAndInteract(CabbageCounter, CuttingCounter);
-    // Cut Cabbage
-    CutIngredient(5);
-    // Grab Cabbage Slices
-    operations.push('e');
-    // Put Down Cabbage Slices To The Plate On Normal Counter
-    MoveCounterToCounterAndInteract(CuttingCounter, NormalCounter);
-    // Grab Tomato at Tomato Counter
-    MoveCounterToCounterAndInteract(NormalCounter, TomatoCounter);
-    // Put Down Tomato To A Cutting Counter
-    MoveCounterToCounterAndInteract(TomatoCounter, CuttingCounter);
-    // Cut Tomato
-    CutIngredient(3);
-    // Grab Tomato Slices
-    operations.push('e');
-    // Put Down Tomato Slices To The Plate on Normal Counter
-    MoveCounterToCounterAndInteract(CuttingCounter, NormalCounter);
-    // Grab Plate
-    operations.push('e');
-    if (controller.GetRecipeMode() == "Salad") {
-        // Move to Delivery Counter without delivering
-        MoveCounterToCounterAndInteract(NormalCounter, DeliveryCounter);
-    }
-}
-
 
 void MakeBurger() {
     MakeCheeseBurger(false, false);
@@ -372,7 +315,7 @@ void MakeCheeseBurger(bool cheese = true, bool mega = false) {
     // MoveCounterToCounter(StoveCounter, DeliveryCounter);
 }
 
-void MakeEvilSalad(bool move = true) {
+void MakeSaladSCMode(bool move = true) {
     playerPosition = controller.GetPlayerPosition();
     isSaladPlate = true;
     MakeSalad();
@@ -385,7 +328,7 @@ void MakeEvilSalad(bool move = true) {
     }
 }
 
-void MakeStrangeBurger(bool move = true) {
+void MakeCheeseBurgerSCMode(bool move = true) {
     playerPosition = controller.GetPlayerPosition();
     MovePointToPointAndInteract(playerPosition, {0, 13});
     MovePointToCounterAndInteract({0, 13}, RawPattyCounter);
@@ -444,7 +387,7 @@ void MakeNextOrder() {
 // -- Initialize functions Below -- //
 
 void DefaultInitialize() {
-    playerPosition = {4, 10};
+    playerPosition = playerStartPosition;
     while (!operations.empty()) {
         operations.pop();
     }
@@ -518,10 +461,9 @@ void SaladCheeseburgerSendOperation() {
         controller.Interact();
         return;
     }
-    PrintOperations();
     if (operations.empty()) {
         if (controller.GetTotalScore() == 17000 and controller.GetPlayerHoldItems().empty()) {
-            // If the player has delivered predictable orders
+            // Deliver the last order
             MoveCounterToPointAndInteract(DeliveryCounter, {8, 20});
             MovePointToCounter({8, 20}, DeliveryCounter);
             SendOperationFromQueue();
@@ -533,11 +475,13 @@ void SaladCheeseburgerSendOperation() {
         }
         Recipe nextRecipe = GetNextOrder();
         if (controller.GetTotalScore() < 16000) {
-            if (nextRecipe == Salad) MakeEvilSalad();
-            if (nextRecipe == CheeseBurger) MakeStrangeBurger();
+            // Move to the center for normal orders
+            if (nextRecipe == Salad) MakeSaladSCMode();
+            else MakeCheeseBurgerSCMode();
         } else if (controller.GetTotalScore() < 17000) {
-            if (nextRecipe == Salad) MakeEvilSalad(false);
-            if (nextRecipe == CheeseBurger) MakeStrangeBurger(false);
+            // Don't move to the center for the second last order
+            if (nextRecipe == Salad) MakeSaladSCMode(false);
+            if (nextRecipe == CheeseBurger) MakeCheeseBurgerSCMode(false);
         }
     }
     SendOperationFromQueue();
