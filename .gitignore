@@ -48,6 +48,7 @@ CMakeScripts/
 CTestTestfile.cmake
 Makefile
 Testing/
+build.cmake/
 
 # Visual Studio Code
 .vscode/
